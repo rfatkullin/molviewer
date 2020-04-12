@@ -6,19 +6,22 @@ export default class Editor {
     private readonly svgCtx: Snap.Paper = null;
     private readonly svgCtxSize: any = null;
     private readonly mol2DataArea: HTMLTextAreaElement = null;
+    private readonly svgBoundary: HTMLElement = null;
 
     private isMouseDown: boolean = true;
     private currMousPos: any = null;
     private mousePrevPos: any = null;
     private drawer: Drawer = null;
 
+
+
     public constructor() {
         this.svgCtx = Snap(600, 600);
 
-        const svgBoundary: HTMLElement = document.getElementById("svg-boundary");
+        this.svgBoundary = document.getElementById("svg-boundary");
         const svgCtxEl: SVGSVGElement = document.getElementsByTagName("svg")[0];
 
-        svgBoundary.appendChild(svgCtxEl);
+        this.svgBoundary.appendChild(svgCtxEl);
 
         this.svgCtxSize = svgCtxEl.getBoundingClientRect();
         this.svgCtxSize.correctedTop = this.svgCtxSize.top + pageYOffset;
@@ -36,12 +39,17 @@ export default class Editor {
         this.processData(this.mol2DataArea.value);
     }
 
-    public onSaveClick(): void {
-        var svgBoundary = document.getElementById("svg_boundary"),
-            anchor = document.getElementById("save_anchor");
+    public onDownloadClick(): void {
+        const element: HTMLAnchorElement = document.createElement('a');
+        element.setAttribute("href", "data:application/octet-stream," + encodeURIComponent(this.svgBoundary.innerHTML));
+        element.setAttribute("download", "scene.svg");
 
-        anchor.setAttribute("href", "data:application/octet-stream," + encodeURIComponent(svgBoundary.innerHTML));
-        anchor.setAttribute("download", "scene.svg");
+        element.style.display = 'none';
+        document.body.appendChild(element);
+
+        element.click();
+
+        document.body.removeChild(element);
     }
 
     private processData(content: string): any {
