@@ -7,28 +7,28 @@ export default class Drawer {
     private readonly MolRadDelta: number = this.MolMaxRad - this.MolMinRad;
     private readonly Border: number = 50;
 
-    private DrawWidth: number;
+    private readonly svgCtx: Snap.Paper = null;
+    private readonly drawWidth: number;
+    private readonly svgCtxSize: any;
 
     private atoms: any;
     private edgesMap: any;
-    private svgCtxSize: any;
 
     private minZ: number;
     private maxZ: number;
     private widthZ: number;
-
-    private svgCtx: any;
+    
 
     private isItDrawn: any;
 
-    constructor(atoms: any, bonds: any) {
-
+    public constructor(newSvgCtx: Snap.Paper, newSvgCtxSize: any) {
+        this.svgCtx = newSvgCtx;
+        this.svgCtxSize = newSvgCtxSize;
+        this.drawWidth = this.svgCtxSize.width - 2 * this.Border;
     }
 
     public init(atoms: any, bonds: any): void {
-        this.DrawWidth = this.svgCtxSize.width - 2 * this.Border;
-
-        this.atoms = Geom.toScale(this.atoms, this.DrawWidth);
+        this.atoms = Geom.toScale(atoms, this.drawWidth);
         this.edgesMap = this.getEdgesMap(bonds);
     }
 
@@ -41,12 +41,15 @@ export default class Drawer {
             edgesMap: any = {};
 
         for (i = 0; i < atomsCnt; ++i) {
-            edgesMap[this.atoms[i].id] = { pos: this.atoms[i].pos, edges: [] };
+            edgesMap[this.atoms[i].id] = {
+                pos: this.atoms[i].pos,
+                edges: []
+            };
         }
 
         for (j = 0; j < bondsCnt; ++j) {
-            this.edgesMap[bonds[j][0]].edges.push(bonds[j][1]);
-            this.edgesMap[bonds[j][1]].edges.push(bonds[j][0]);
+            edgesMap[bonds[j][0]].edges.push(bonds[j][1]);
+            edgesMap[bonds[j][1]].edges.push(bonds[j][0]);
         }
 
         return edgesMap;
@@ -127,13 +130,13 @@ export default class Drawer {
 
     private offsetToDrawCanvas(pos: any): any {
         return {
-            x: pos.x + this.DrawWidth / 2 + this.Border,
-            y: pos.y + this.DrawWidth / 2 + this.Border,
+            x: pos.x + this.drawWidth / 2 + this.Border,
+            y: pos.y + this.drawWidth / 2 + this.Border,
             z: pos.z
         };
     }
 
-    private rotate(rotateVec: any) {
+    public rotate(rotateVec: any) {
         Geom.rotateByY(this.atoms, -rotateVec.x * 0.01);
         Geom.rotateByX(this.atoms, rotateVec.y * 0.01);
     }
@@ -257,5 +260,5 @@ export default class Drawer {
         //svgCtx.text(pos.x, pos.y, molId.toString());
     }
 
-    
+
 }

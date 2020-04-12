@@ -1,22 +1,18 @@
-<html onmouseup="OnMouseUp(event)">
+<html>
 
 <head>
 </head>
 
-<body onload="OnLoad()" onmousemove="OnMouseMove(event)">
+<body id="draw-canvas">
 
-    <div id="svg_boundary" onmousedown="OnMouseDown(event)">
-    </div>
+    <div id="svg-boundary"></div>
 
     <p>
-        <textarea id="mol2data" rows="10" cols="45" name="text"></textarea>
+        <textarea id="mol2-data" rows="10" cols="45" name="text"></textarea>
     </p>
-    <select id="fileSelect">
-        <option selected="selected">text box</option>
-    </select>
-    <button onclick="OnDrawClick()">Draw</button>
-    
-    <a id="save_anchor" href="http://localhost" onclick="OnSaveClick()">Save</a>
+    <button id="save-button">Draw</button>
+
+    <a id="save-anchor" href="http://localhost">Save</a>
 
 </body>
 

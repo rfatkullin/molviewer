@@ -1,34 +1,39 @@
 import Mol2Parser from "./mol2_parser";
 import * as Snap from 'snapsvg';
+import Drawer from "./drawer";
 
 export default class Editor {
-    private svgCtx: any = Snap(600, 600);
-    private svgCtxSize: any = null;
+    private readonly svgCtx: Snap.Paper = null;
+    private readonly svgCtxSize: any = null;
+    private readonly mol2DataArea: HTMLTextAreaElement = null;
+
     private isMouseDown: boolean = true;
-    private currMousPos: any = this.mouseWorldPos(event);
-    private mousePrevPos: any = this.currMousPos;
-    private drawer: any = null;
+    private currMousPos: any = null;
+    private mousePrevPos: any = null;
+    private drawer: Drawer = null;
 
-    public init(): void {
-        setInterval(this.mainLoop, 33);
-    }
-
-    public onLoad(): void {
+    public constructor() {
         this.svgCtx = Snap(600, 600);
 
-        var svgBoundary = document.getElementById("svg_boundary"),
-            svgCtxEl = document.getElementsByTagName("svg")[0];
+        const svgBoundary: HTMLElement = document.getElementById("svg-boundary");
+        const svgCtxEl: SVGSVGElement = document.getElementsByTagName("svg")[0];
 
         svgBoundary.appendChild(svgCtxEl);
 
         this.svgCtxSize = svgCtxEl.getBoundingClientRect();
         this.svgCtxSize.correctedTop = this.svgCtxSize.top + pageYOffset;
+
+        this.mol2DataArea = document.getElementById("mol2-data") as HTMLTextAreaElement;
+
+        this.drawer = new Drawer(this.svgCtx, this.svgCtxSize);
     }
 
-    private onDrawClick(): void {
-        const selectObj: any = document.getElementById("fileSelect");
+    public init(): void {
+        setInterval(() => this.mainLoop(), 33);
+    }
 
-        //this.processData(document.getElementById("mol2data").value);
+    public onDrawClick(): void {
+        this.processData(this.mol2DataArea.value);
     }
 
     public onSaveClick(): void {
@@ -39,16 +44,16 @@ export default class Editor {
         anchor.setAttribute("download", "scene.svg");
     }
 
-    private processData(content: any): any {
-        var atomsBlock,
-            bondsBlock;
-
-        if (content) {
-            atomsBlock = Mol2Parser.getBlock("ATOM", content);
-            bondsBlock = Mol2Parser.getBlock("BOND", content);
-            this.drawer = new this.drawer(atomsBlock, bondsBlock);
-            this.drawer.Draw();
+    private processData(content: string): any {
+        if (!content) {
+            return;
         }
+
+        const atomsBlock = Mol2Parser.getBlock("ATOM", content);
+        const bondsBlock = Mol2Parser.getBlock("BOND", content);
+
+        this.drawer.init(atomsBlock, bondsBlock);
+        this.drawer.draw();
     }
 
     private mouseWorldPos(event: any): any {
@@ -78,25 +83,27 @@ export default class Editor {
 
         if (this.currMousPos.x <= 10 || this.currMousPos.x >= this.svgCtxSize.width ||
             this.currMousPos.y <= 10 || this.currMousPos.y >= this.svgCtxSize.height) {
-                this.isMouseDown = false;
+            this.isMouseDown = false;
         }
     }
 
     public onMouseDown(event: any): void {
-        if (event.button === 0) {
-            if (event.preventDefault) {
-                event.preventDefault();
-                event.stopPropagation();
-            }
-            else {
-                event.returnValue = false;
-                event.cancelBubble = true;
-            }
-
-            this.isMouseDown = true;
-            this.currMousPos = this.mouseWorldPos(event);
-            this.mousePrevPos = this.currMousPos;
+        if (event.button !== 0) {
+            return;
         }
+
+        if (event.preventDefault) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        else {
+            event.returnValue = false;
+            event.cancelBubble = true;
+        }
+
+        this.isMouseDown = true;
+        this.currMousPos = this.mouseWorldPos(event);
+        this.mousePrevPos = this.currMousPos;
     }
 
     public onMouseUp(event: any): void {
@@ -109,10 +116,10 @@ export default class Editor {
         }
 
         if (this.isMouseDown) {
-            this.drawer.Rotate({ x: this.currMousPos.x - this.mousePrevPos.x, y: this.currMousPos.y - this.mousePrevPos.y });
+            this.drawer.rotate({ x: this.currMousPos.x - this.mousePrevPos.x, y: this.currMousPos.y - this.mousePrevPos.y });
             this.mousePrevPos = this.currMousPos;
 
-            this.drawer.Draw();
+            this.drawer.draw();
         }
-    }    
+    }
 }
