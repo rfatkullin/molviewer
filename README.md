@@ -1,4 +1,6 @@
-### About
+### molviewer
+![coronene](https://github.com/rfatkullin/molviewer/blob/master/examples/scenes/coronene.svg)
+
 molviewer is a web application for rendering simple molecules structure.
 It uses such technologies as SVG and HTML5. 
 
@@ -10,3 +12,5 @@ $ cd molviewer
 $ npm install
 $ npm start
 ```
+### Animated
+![coronene_animated](https://github.com/rfatkullin/molviewer/blob/master/examples/scenes/coronene_rotation.gif)
