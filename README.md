@@ -1,4 +1,12 @@
-	0) Отображение двух молекул, которые имеют одинаковые значения по z, выглядит некрасиво.
-Можно сделать получше - сначала рисовать ребра, поверх них атомы. Но для этого нужно серьезно изменить
-весь вывод.
-	1) Пока не обрабатывается случай двойных(тройных, ...) связей.
+### About
+molviewer is a web application for rendering simple molecules structure.
+It uses such technologies as SVG and HTML5. 
+
+### Developing Locally
+For local development clone run next commands:
+``` 
+$ https://github.com/rfatkullin/molviewer.git
+$ cd molviewer
+$ npm install
+$ npm start
+```
