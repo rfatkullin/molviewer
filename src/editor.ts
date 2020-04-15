@@ -1,47 +1,46 @@
 import Mol2Parser from "./mol2_parser";
 import * as Snap from 'snapsvg';
 import Drawer from "./drawer";
+import Configs from "./config";
 
 export default class Editor {
-    private readonly svgCtx: Snap.Paper = null;
-    private readonly svgCtxSize: any = null;
-    private readonly mol2DataArea: HTMLTextAreaElement = null;
-    private readonly svgBoundary: HTMLElement = null;
+    private readonly _svgCtx: Snap.Paper = null;
+    private readonly _svgCtxSize: any = null;
+    private readonly _mol2DataArea: HTMLTextAreaElement = null;
+    private readonly _svgBoundary: HTMLElement = null;
 
-    private isMouseDown: boolean = false;
-    private currMousPos: any = null;
-    private mousePrevPos: any = null;
-    private drawer: Drawer = null;
-
-
+    private _isMouseDown: boolean = false;
+    private _currMousPos: any = null;
+    private _mousePrevPos: any = null;
+    private _drawer: Drawer = null;
 
     public constructor() {
-        this.svgCtx = Snap(600, 600);
+        this._svgCtx = Snap(600, 600);
 
-        this.svgBoundary = document.getElementById("svg-boundary");
+        this._svgBoundary = document.getElementById("svg-boundary");
         const svgCtxEl: SVGSVGElement = document.getElementsByTagName("svg")[0];
 
-        this.svgBoundary.appendChild(svgCtxEl);
+        this._svgBoundary.appendChild(svgCtxEl);
 
-        this.svgCtxSize = svgCtxEl.getBoundingClientRect();
-        this.svgCtxSize.correctedTop = this.svgCtxSize.top + pageYOffset;
+        this._svgCtxSize = svgCtxEl.getBoundingClientRect();
+        this._svgCtxSize.correctedTop = this._svgCtxSize.top + pageYOffset;
 
-        this.mol2DataArea = document.getElementById("mol2-data") as HTMLTextAreaElement;
+        this._mol2DataArea = document.getElementById("mol2-data") as HTMLTextAreaElement;
 
-        this.drawer = new Drawer(this.svgCtx, this.svgCtxSize);
+        this._drawer = new Drawer(this._svgCtx, this._svgCtxSize);
     }
 
     public init(): void {
-        setInterval(() => this.mainLoop(), 33);
+        setInterval(() => this.mainLoop(), Configs.FrameRenderTime);
     }
 
     public onDrawClick(): void {
-        this.processData(this.mol2DataArea.value);
+        this.processData(this._mol2DataArea.value);
     }
 
     public onDownloadClick(): void {
         const element: HTMLAnchorElement = document.createElement('a');
-        element.setAttribute("href", "data:application/octet-stream," + encodeURIComponent(this.svgBoundary.innerHTML));
+        element.setAttribute("href", "data:application/octet-stream," + encodeURIComponent(this._svgBoundary.innerHTML));
         element.setAttribute("download", "scene.svg");
 
         element.style.display = 'none';
@@ -60,12 +59,12 @@ export default class Editor {
         const atomsBlock = Mol2Parser.getBlock("ATOM", content);
         const bondsBlock = Mol2Parser.getBlock("BOND", content);
 
-        this.drawer.init(atomsBlock, bondsBlock);
-        this.drawer.draw();
+        this._drawer.init(atomsBlock, bondsBlock);
+        this._drawer.draw();
     }
 
     private mouseWorldPos(event: any): any {
-        if (typeof this.svgCtxSize === 'undefined') {
+        if (typeof this._svgCtxSize === 'undefined') {
             return {
                 x: 0,
                 y: 0
@@ -73,25 +72,25 @@ export default class Editor {
         }
 
         return {
-            x: event.pageX - this.svgCtxSize.left,
-            y: this.svgCtxSize.height - (event.pageY - this.svgCtxSize.correctedTop)
+            x: event.pageX - this._svgCtxSize.left,
+            y: this._svgCtxSize.height - (event.pageY - this._svgCtxSize.correctedTop)
         };
     }
 
     public onMouseMove(event: any): void {
-        if (!this.isMouseDown) {
+        if (!this._isMouseDown) {
             return;
         }
 
-        this.currMousPos = this.mouseWorldPos(event);
+        this._currMousPos = this.mouseWorldPos(event);
 
-        if (typeof this.svgCtxSize === 'undefined') {
+        if (typeof this._svgCtxSize === 'undefined') {
             return;
         }
 
-        if (this.currMousPos.x <= 10 || this.currMousPos.x >= this.svgCtxSize.width ||
-            this.currMousPos.y <= 10 || this.currMousPos.y >= this.svgCtxSize.height) {
-            this.isMouseDown = false;
+        if (this._currMousPos.x <= 10 || this._currMousPos.x >= this._svgCtxSize.width ||
+            this._currMousPos.y <= 10 || this._currMousPos.y >= this._svgCtxSize.height) {
+            this._isMouseDown = false;
         }
     }
 
@@ -109,25 +108,25 @@ export default class Editor {
             event.cancelBubble = true;
         }
 
-        this.isMouseDown = true;
-        this.currMousPos = this.mouseWorldPos(event);
-        this.mousePrevPos = this.currMousPos;
+        this._isMouseDown = true;
+        this._currMousPos = this.mouseWorldPos(event);
+        this._mousePrevPos = this._currMousPos;
     }
 
     public onMouseUp(event: any): void {
-        this.isMouseDown = !(event.button === 0);
+        this._isMouseDown = !(event.button === 0);
     }
 
     public mainLoop(): void {
-        if (!this.drawer) {
+        if (!this._drawer) {
             return;
         }
 
-        if (this.isMouseDown) {
-            this.drawer.rotate({ x: this.currMousPos.x - this.mousePrevPos.x, y: this.currMousPos.y - this.mousePrevPos.y });
-            this.mousePrevPos = this.currMousPos;
+        if (this._isMouseDown) {
+            this._drawer.rotate({ x: this._currMousPos.x - this._mousePrevPos.x, y: this._currMousPos.y - this._mousePrevPos.y });
+            this._mousePrevPos = this._currMousPos;
 
-            this.drawer.draw();
+            this._drawer.draw();
         }
     }
 }
