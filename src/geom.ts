@@ -8,9 +8,9 @@ export default class Geom {
     }
 
     public static normalizeVec(vec: Vector): Vector {
-        var length = this.vecLength(vec);
+        const length: number = this.vecLength(vec);
 
-        return { x: vec.x / length, y: vec.y / length };
+        return Vector.From(vec.x / length, vec.y / length);
     }
 
     public static pseudoscalarMult(a: Vector, b: Vector): number {
@@ -18,8 +18,8 @@ export default class Geom {
     }
 
     public static sortByPerpendicularDist(point: Vector, aLine: any, bLine: any): any {
-        var aDist = this.perpendicularDist(point, aLine),
-            bDist = this.perpendicularDist(point, bLine);
+        const aDist: number = this.perpendicularDist(point, aLine);
+        const bDist: number = this.perpendicularDist(point, bLine);
 
         if (aDist + Configs.Epsilon < bDist) {
             return [aLine, bLine];
@@ -29,9 +29,9 @@ export default class Geom {
     }
 
     public static perpendicularDist(point: Vector, line: any): number {
-        var AB = { x: line.end.x - line.start.x, y: line.end.y - line.start.y },
-            CD = this.normalizeVec({ x: AB.y, y: -AB.x }),
-            AC = { x: point.x - line.start.x, y: point.y - line.start.y },
+        var AB = { x: line.end.x - line.start.x, y: line.end.y - line.start.y, z: 0 },
+            CD = this.normalizeVec({ x: AB.y, y: -AB.x, z: 0 }),
+            AC = { x: point.x - line.start.x, y: point.y - line.start.y, z: 0 },
             ACxAB = this.pseudoscalarMult(AC, AB),
             CDxAB = this.pseudoscalarMult(CD, AB),
             alpha = -ACxAB / CDxAB;
@@ -40,10 +40,10 @@ export default class Geom {
     }
 
     public static inMiddle(point: Vector, aLine: any, bLine: any): boolean {
-        var a = { x: aLine.end.x - aLine.start.x, y: aLine.end.y - aLine.start.y },
-            b = { x: bLine.end.x - bLine.start.x, y: bLine.end.y - bLine.start.y },
-            pointAVec = { x: point.x - aLine.start.x, y: point.y - aLine.start.y },
-            pointBVec = { x: point.x - bLine.start.x, y: point.y - bLine.start.y },
+        var a = { x: aLine.end.x - aLine.start.x, y: aLine.end.y - aLine.start.y, z: 0 },
+            b = { x: bLine.end.x - bLine.start.x, y: bLine.end.y - bLine.start.y, z: 0 },
+            pointAVec = { x: point.x - aLine.start.x, y: point.y - aLine.start.y, z: 0 },
+            pointBVec = { x: point.x - bLine.start.x, y: point.y - bLine.start.y, z: 0 },
             res1 = this.pseudoscalarMult(pointAVec, a),
             res2 = this.pseudoscalarMult(pointBVec, b);
 
@@ -56,7 +56,8 @@ export default class Geom {
     public static shiftBy(point: Vector, dirVec: Vector, factor: number): Vector {
         return {
             x: point.x + factor * dirVec.x,
-            y: point.y + factor * dirVec.y
+            y: point.y + factor * dirVec.y,
+            z: 0
         };
     }
 

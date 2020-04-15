@@ -142,7 +142,7 @@ export default class Drawer {
     }
 
     private arc(startPos: any, endPos: any, clockWise: boolean): void {
-        const length: number = Geom.vecLength({ x: endPos.x - startPos.x, y: endPos.y - startPos.y });
+        const length: number = Geom.vecLength({ x: endPos.x - startPos.x, y: endPos.y - startPos.y, z: 0 });
         const rad: number = length / 2.0;
 
         const clockWiseInt: number = clockWise ? 0 : 1;
@@ -160,8 +160,8 @@ export default class Drawer {
         var endRad = this.getMoleculeRad(endPos.z),
             startFactor = 0.2 * startRad,
             endFactor = 0.2 * endRad,
-            dirVec = { x: endPos.x - startPos.x, y: endPos.y - startPos.y },
-            normVec = Geom.normalizeVec({ x: -dirVec.y, y: dirVec.x }),
+            dirVec = { x: endPos.x - startPos.x, y: endPos.y - startPos.y, z: 0 },
+            normVec = Geom.normalizeVec({ x: -dirVec.y, y: dirVec.x, z: 0 }),
             shiftedStart = Geom.shiftBy(startPos, Geom.normalizeVec(dirVec), 0.5 * startRad),
             startTop = {
                 x: shiftedStart.x - normVec.x,
@@ -189,7 +189,7 @@ export default class Drawer {
             },
             i = 0;
 
-        const edgeLines = Geom.sortByPerpendicularDist({ x: 0, y: 0 }, { start: startBot, end: endBot }, { start: startTop, end: endTop });
+        const edgeLines = Geom.sortByPerpendicularDist({ x: 0, y: 0, z: 0 }, { start: startBot, end: endBot }, { start: startTop, end: endTop });
 
         for (i = 0; i < edgeLines.length; ++i) {
             edgeLines[i].start.x += edgeLines[i].start.xDelta;
@@ -214,7 +214,7 @@ export default class Drawer {
         var color = "black",
             width = "1";
 
-        if (!Geom.inMiddle({ x: 0, y: 0 }, edgeLines[0], edgeLines[1])) {
+        if (!Geom.inMiddle({ x: 0, y: 0, z: 0 }, edgeLines[0], edgeLines[1])) {
             color = "gray";
             width = "3";
         }

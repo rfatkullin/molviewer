@@ -2,6 +2,7 @@ import Mol2Parser from "./mol2_parser";
 import * as Snap from 'snapsvg';
 import Drawer from "./drawer";
 import Configs from "./config";
+import Vector from "./vector";
 
 export default class Editor {
     private readonly _svgCtx: Snap.Paper = null;
@@ -10,8 +11,8 @@ export default class Editor {
     private readonly _svgBoundary: HTMLElement = null;
 
     private _isMouseDown: boolean = false;
-    private _currMousPos: any = null;
-    private _mousePrevPos: any = null;
+    private _currMousPos: Vector = null;
+    private _mousePrevPos: Vector = null;
     private _drawer: Drawer = null;
 
     public constructor() {
@@ -63,17 +64,15 @@ export default class Editor {
         this._drawer.draw();
     }
 
-    private mouseWorldPos(event: any): any {
-        if (typeof this._svgCtxSize === 'undefined') {
-            return {
-                x: 0,
-                y: 0
-            };
+    private mouseWorldPos(event: any): Vector {
+        if (!this._svgCtxSize) {
+            return Vector.Empty();
         }
 
         return {
             x: event.pageX - this._svgCtxSize.left,
-            y: this._svgCtxSize.height - (event.pageY - this._svgCtxSize.correctedTop)
+            y: this._svgCtxSize.height - (event.pageY - this._svgCtxSize.correctedTop),
+            z: 0
         };
     }
 
@@ -84,7 +83,7 @@ export default class Editor {
 
         this._currMousPos = this.mouseWorldPos(event);
 
-        if (typeof this._svgCtxSize === 'undefined') {
+        if (!this._svgCtxSize) {
             return;
         }
 
