@@ -122,7 +122,7 @@ export default class Editor {
         }
 
         if (this._isMouseDown) {
-            this._drawer.rotate({ x: this._currMousPos.x - this._mousePrevPos.x, y: this._currMousPos.y - this._mousePrevPos.y });
+            this._drawer.rotate({ x: this._currMousPos.x - this._mousePrevPos.x, y: this._currMousPos.y - this._mousePrevPos.y, z : 0 });
             this._mousePrevPos = this._currMousPos;
 
             this._drawer.draw();

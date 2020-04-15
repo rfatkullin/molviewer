@@ -1,5 +1,6 @@
 import Configs from "./config";
 import Geom from "./geom";
+import Vector from "./vector";
 
 export default class Drawer {
     private readonly MolMinRad: number = 10;
@@ -7,47 +8,43 @@ export default class Drawer {
     private readonly MolRadDelta: number = this.MolMaxRad - this.MolMinRad;
     private readonly Border: number = 50;
 
-    private readonly svgCtx: Snap.Paper = null;
-    private readonly drawWidth: number;
-    private readonly svgCtxSize: any;
+    private readonly _svgCtx: Snap.Paper = null;
+    private readonly _drawWidth: number;
+    private readonly _svgCtxSize: any;
 
-    private atoms: any;
-    private edgesMap: any;
+    private _atoms: any;
+    private _edgesMap: any;
 
-    private minZ: number;
-    private maxZ: number;
-    private widthZ: number;
-    
+    private _minZ: number;
+    private _maxZ: number;
+    private _widthZ: number;
 
-    private isItDrawn: any;
+    private _isItDrawn: any;
 
     public constructor(newSvgCtx: Snap.Paper, newSvgCtxSize: any) {
-        this.svgCtx = newSvgCtx;
-        this.svgCtxSize = newSvgCtxSize;
-        this.drawWidth = this.svgCtxSize.width - 2 * this.Border;
+        this._svgCtx = newSvgCtx;
+        this._svgCtxSize = newSvgCtxSize;
+        this._drawWidth = this._svgCtxSize.width - 2 * this.Border;
     }
 
     public init(atoms: any, bonds: any): void {
-        this.atoms = Geom.toScale(atoms, this.drawWidth);
-        this.edgesMap = this.getEdgesMap(bonds);
+        this._atoms = Geom.toScale(atoms, this._drawWidth);
+        this._edgesMap = this.getEdgesMap(bonds);
     }
 
     private getEdgesMap(bonds: any): any {
-        var atomsCnt = this.atoms.length,
-            bondsCnt = bonds.length,
-            i = 0,
-            j = 0,
-            adjAtomId: number = -1,
-            edgesMap: any = {};
+        const atomsCnt: number = this._atoms.length;
+        const bondsCnt: number = bonds.length
+        const edgesMap: any = {};
 
-        for (i = 0; i < atomsCnt; ++i) {
-            edgesMap[this.atoms[i].id] = {
-                pos: this.atoms[i].pos,
+        for (let i = 0; i < atomsCnt; ++i) {
+            edgesMap[this._atoms[i].id] = {
+                pos: this._atoms[i].pos,
                 edges: []
             };
         }
 
-        for (j = 0; j < bondsCnt; ++j) {
+        for (let j = 0; j < bondsCnt; ++j) {
             edgesMap[bonds[j][0]].edges.push(bonds[j][1]);
             edgesMap[bonds[j][1]].edges.push(bonds[j][0]);
         }
@@ -56,60 +53,58 @@ export default class Drawer {
     }
 
     public draw(): void {
-        let atomsCnt: number = this.atoms.length,
-            i: number = 0,
-            j: number = 0,
-            edges: any = [],
-            edgesCnt: number = 0,
-            atomId: number = -1,
-            atomPos: any = {},
-            atomRad: number = -1,
-            adjAtomPos: any = {};
+        const atomsCnt: number = this._atoms.length;
 
-        this.atoms.sort(Geom.compareByZ);
+        let edges: any = [];
+        let edgesCnt: number = 0;
+        let atomPos: Vector;
+        let atomRad: number = -1;
+        let adjAtomPos: Vector;
 
-        this.minZ = this.atoms[0].pos.z;
-        this.maxZ = this.atoms[atomsCnt - 1].pos.z;
-        this.widthZ = this.maxZ - this.minZ;
+        this._atoms.sort(Geom.compareByZ);
+
+        this._minZ = this._atoms[0].pos.z;
+        this._maxZ = this._atoms[atomsCnt - 1].pos.z;
+        this._widthZ = this._maxZ - this._minZ;
 
         //Если все точки лежат в одной плоскости по Z
-        if (Math.abs(this.widthZ) < Configs.Epsilon) {
-            this.widthZ = 0.1;
+        if (Math.abs(this._widthZ) < Configs.Epsilon) {
+            this._widthZ = 0.1;
         }
 
-        this.svgCtx.clear();
+        this._svgCtx.clear();
 
         this.drawContextRect();
 
-        this.isItDrawn = {};
+        this._isItDrawn = {};
 
-        for (i = 0; i < atomsCnt; ++i) {
-            atomPos = this.offsetToDrawCanvas(this.atoms[i].pos);
+        for (let i = 0; i < atomsCnt; ++i) {
+            atomPos = this.offsetToDrawCanvas(this._atoms[i].pos);
             atomRad = this.getMoleculeRad(atomPos.z);
-            this.drawMolecule(atomPos, atomRad, this.atoms[i].id);
+            this.drawMolecule(atomPos, atomRad);
 
-            edges = this.edgesMap[this.atoms[i].id].edges;
+            edges = this._edgesMap[this._atoms[i].id].edges;
             edgesCnt = edges.length;
-            for (j = 0; j < edgesCnt; ++j) {
-                adjAtomPos = this.edgesMap[edges[j]].pos;
+            for (let j = 0; j < edgesCnt; ++j) {
+                adjAtomPos = this._edgesMap[edges[j]].pos;
 
                 if (atomPos.z + Configs.Epsilon < adjAtomPos.z) {
                     this.drawEdge(atomPos, atomRad, this.offsetToDrawCanvas(adjAtomPos));
                 }
-                else if (Math.abs(atomPos.z - adjAtomPos.z) < Configs.Epsilon && this.isDrawn(this.atoms[i].id, edges[j]) === false) {
+                else if (Math.abs(atomPos.z - adjAtomPos.z) < Configs.Epsilon && this.isDrawn(this._atoms[i].id, edges[j]) === false) {
                     this.drawEdge(atomPos, atomRad, this.offsetToDrawCanvas(adjAtomPos));
-                    this.setDrawn(this.atoms[i].id, edges[j]);
+                    this.setDrawn(this._atoms[i].id, edges[j]);
                 }
             }
         }
     }
 
     private isDrawn(id1: string, id2: string): boolean {
-        if (this.isItDrawn[id1] === undefined) {
+        if (this._isItDrawn[id1] === undefined) {
             return false;
         }
 
-        if (this.isItDrawn[id1][id2] === undefined) {
+        if (this._isItDrawn[id1][id2] === undefined) {
             return false;
         }
 
@@ -117,28 +112,28 @@ export default class Drawer {
     }
 
     private setDrawn(id1: string, id2: string): void {
-        if (this.isItDrawn[id1] === undefined)
-            this.isItDrawn[id1] = {};
+        if (this._isItDrawn[id1] === undefined)
+            this._isItDrawn[id1] = {};
 
-        this.isItDrawn[id1][id2] = true;
+        this._isItDrawn[id1][id2] = true;
 
-        if (this.isItDrawn[id2] === undefined)
-            this.isItDrawn[id2] = {};
+        if (this._isItDrawn[id2] === undefined)
+            this._isItDrawn[id2] = {};
 
-        this.isItDrawn[id2][id1] = true;
+        this._isItDrawn[id2][id1] = true;
     }
 
-    private offsetToDrawCanvas(pos: any): any {
+    private offsetToDrawCanvas(pos: Vector): Vector {
         return {
-            x: pos.x + this.drawWidth / 2 + this.Border,
-            y: pos.y + this.drawWidth / 2 + this.Border,
+            x: pos.x + this._drawWidth / 2 + this.Border,
+            y: pos.y + this._drawWidth / 2 + this.Border,
             z: pos.z
         };
     }
 
-    public rotate(rotateVec: any) {
-        Geom.rotateByY(this.atoms, -rotateVec.x * 0.01);
-        Geom.rotateByX(this.atoms, rotateVec.y * 0.01);
+    public rotate(rotateVec: Vector): void {
+        Geom.rotateByY(this._atoms, -rotateVec.x * 0.01);
+        Geom.rotateByX(this._atoms, rotateVec.y * 0.01);
     }
 
     private arc(startPos: any, endPos: any, clockWise: boolean): void {
@@ -148,15 +143,15 @@ export default class Drawer {
         const clockWiseInt: number = clockWise ? 0 : 1;
         const path: string = `M ${startPos.x} ${startPos.y} A ${rad} ${rad} 0 1 ${clockWiseInt} ${endPos.x} ${endPos.y}`;
 
-        this.svgCtx.path(path).attr({ fill: "none", stroke: "black", strokeWidth: "1" });
+        this._svgCtx.path(path).attr({ fill: "none", stroke: "black", strokeWidth: "1" });
     }
 
     private drawContextRect(): void {
-        this.svgCtx.rect(0, 0, this.svgCtxSize.width, this.svgCtxSize.height, 5, 5)
+        this._svgCtx.rect(0, 0, this._svgCtxSize.width, this._svgCtxSize.height, 5, 5)
             .attr({ stroke: "black", strokeWidth: "1", fill: "white", "fill-opacity": "1.0" });
     }
 
-    private drawEdge(startPos: any, startRad: any, endPos: any): void {
+    private drawEdge(startPos: Vector, startRad: number, endPos: Vector): void {
         var endRad = this.getMoleculeRad(endPos.z),
             startFactor = 0.2 * startRad,
             endFactor = 0.2 * endRad,
@@ -199,7 +194,7 @@ export default class Drawer {
             edgeLines[i].end.y += edgeLines[i].end.yDelta;
         }
 
-        this.svgCtx.polyline([startTop.x, startTop.y,
+        this._svgCtx.polyline([startTop.x, startTop.y,
         endTop.x, endTop.y,
 
         endBot.x, endBot.y,
@@ -208,7 +203,7 @@ export default class Drawer {
         startBot.x, startBot.y,
         startTop.x, startTop.y]).attr({ strokeWidth: "0", stroke: "black", fill: "white" });
 
-        this.svgCtx.line(edgeLines[0].start.x, edgeLines[0].start.y,
+        this._svgCtx.line(edgeLines[0].start.x, edgeLines[0].start.y,
             edgeLines[0].end.x, edgeLines[0].end.y).attr({ strokeWidth: "1", stroke: "black", fill: "black" });
 
         var color = "black",
@@ -219,7 +214,7 @@ export default class Drawer {
             width = "3";
         }
 
-        this.svgCtx.line(edgeLines[1].start.x, edgeLines[1].start.y,
+        this._svgCtx.line(edgeLines[1].start.x, edgeLines[1].start.y,
             edgeLines[1].end.x, edgeLines[1].end.y).attr({ strokeWidth: width, stroke: color, fill: "black" });
 
         this.arc(startTop, startBot, true);
@@ -227,23 +222,21 @@ export default class Drawer {
     }
 
     private getMoleculeRad(zCompVal: number): number {
-        return this.MolMinRad + this.MolRadDelta * Math.abs(zCompVal - this.minZ) / this.widthZ;
+        return this.MolMinRad + this.MolRadDelta * Math.abs(zCompVal - this._minZ) / this._widthZ;
     }
 
-    private drawMolecule(pos: any, rad: number, molId: string): void {
-        var bigCircle = this.svgCtx.circle(pos.x, pos.y, rad);
-
+    private drawMolecule(pos: Vector, rad: number): void {
+        const bigCircle: Snap.Element = this._svgCtx.circle(pos.x, pos.y, rad);
         bigCircle.attr({
             fill: "gray"
         });
 
-        var smallCircle = this.svgCtx.circle(pos.x - 0.2 * rad, pos.y - 0.2 * rad, rad);
+        const smallCircle: Snap.Element = this._svgCtx.circle(pos.x - 0.2 * rad, pos.y - 0.2 * rad, rad);
         smallCircle.attr({
             fill: "white"
         });
 
-        var bigCircleStroke = this.svgCtx.circle(pos.x, pos.y, rad);
-
+        const bigCircleStroke: Snap.Element = this._svgCtx.circle(pos.x, pos.y, rad);
         bigCircleStroke.attr({
             fill: "gray",
             "fill-opacity": "0.0",
@@ -251,14 +244,9 @@ export default class Drawer {
             strokeWidth: "1"
         });
 
-        var masker = this.svgCtx.group(this.svgCtx.circle(pos.x, pos.y, rad));
+        const masking: Snap.Paper = this._svgCtx.group(this._svgCtx.circle(pos.x, pos.y, rad));
+        masking.attr({ fill: "#fff" });
 
-        masker.attr({ fill: "#fff" });
-
-        smallCircle.attr({ mask: masker });
-
-        //svgCtx.text(pos.x, pos.y, molId.toString());
+        smallCircle.attr({ mask: masking });
     }
-
-
 }
