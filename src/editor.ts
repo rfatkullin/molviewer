@@ -8,7 +8,7 @@ export default class Editor {
     private readonly mol2DataArea: HTMLTextAreaElement = null;
     private readonly svgBoundary: HTMLElement = null;
 
-    private isMouseDown: boolean = true;
+    private isMouseDown: boolean = false;
     private currMousPos: any = null;
     private mousePrevPos: any = null;
     private drawer: Drawer = null;
