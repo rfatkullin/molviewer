@@ -20,15 +20,31 @@ export default class TopMenu extends React.Component<Props, State> {
         return <div className="top-menu">
             <div>
                 <ButtonGroup variant="outlined" color="primary" aria-label="outlined primary button group">
+                    
                     <Button onClick={() => this.props.onItemClick('Coronene')} disabled={this.props.mode == "Coronene"}>
                         Coronene
-            </Button>
+                    </Button>
+                    
                     <Button onClick={() => this.props.onItemClick('Benzene')} disabled={this.props.mode == "Benzene"}>
                         Benzene
-            </Button>
+                    </Button>
+                    
                     <Button onClick={() => this.props.onItemClick('Butadiene')} disabled={this.props.mode == "Butadiene"}>
                         Butadiene
-            </Button>
+                    </Button>
+
+                    <Button onClick={() => this.props.onItemClick('Anthracene')} disabled={this.props.mode == "Anthracene"}>
+                        Anthracene
+                    </Button>
+
+                    <Button onClick={() => this.props.onItemClick('Naphthalene')} disabled={this.props.mode == "Naphthalene"}>
+                        Naphthalene
+                    </Button>
+
+                    <Button onClick={() => this.props.onItemClick('Perylene')} disabled={this.props.mode == "Perylene"}>
+                        Perylene
+                    </Button>
+                
                 </ButtonGroup>
             </div>
         </div>

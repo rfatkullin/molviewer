@@ -1,0 +1,35 @@
+#svg-boundary
+{
+    position: relative;
+
+    max-height: 600px;
+    max-width: 600px;
+    
+    height: 600px;
+    width: 600px;
+
+    margin-right: 10px;
+}
+
+#draw-canvas
+{
+    margin-top: 5px;   
+
+    display: flex;
+}
+
+#download-button
+{
+    position: absolute;    
+    top: 5px;
+    right: 10px;
+}
+
+#mol2-data
+{
+    max-height: 600px;
+    max-width: 600px;
+    
+    height: 600px;
+    width: 600px;    
+}

@@ -17,7 +17,10 @@
     "@types/react-dom": "^16.9.7",
     "browser-sync": "^2.26.7",
     "browser-sync-webpack-plugin": "^2.2.2",
+    "css-loader": "^3.5.3",
     "html-webpack-plugin": "^2.30.1",
+    "raw-loader": "^4.0.1",
+    "style-loader": "^1.2.1",
     "ts-loader": "^3.0.0",
     "typescript": "^3.8.3",
     "webpack": "3.11.0"

@@ -14,6 +14,18 @@ module.exports = {
       {
         test: require.resolve('snapsvg'),
         loader: 'imports-loader?this=>window,fix=>module.exports=0'
+      },
+      {
+        test: /\.mol2$/i,
+        use: [
+          {
+            loader: 'raw-loader',
+          },
+        ],
+      },
+      {
+        test: /\.css$/i,
+        use: ['style-loader', 'css-loader'],
       }
     ],
   },
