@@ -1,21 +1,21 @@
-import Mol2Parser from "./mol2_parser";
+import Mol2Parser from "./utils/mol2_parser";
 import * as Snap from 'snapsvg';
 import Drawer from "./drawer";
-import Configs from "./config";
-import Vector from "./vector";
+import Configs from "./configs/config";
+import Vector from "./utils/vector";
 
 export default class Editor {
-    private readonly _svgCtx: Snap.Paper = null;
-    private readonly _svgCtxSize: any = null;
-    private readonly _mol2DataArea: HTMLTextAreaElement = null;
-    private readonly _svgBoundary: HTMLElement = null;
+    private _svgCtx: Snap.Paper = null;
+    private _svgCtxSize: any = null;
+    private _mol2DataArea: HTMLTextAreaElement = null;
+    private _svgBoundary: HTMLElement = null;
 
     private _isMouseDown: boolean = false;
     private _currMousPos: Vector = null;
     private _mousePrevPos: Vector = null;
     private _drawer: Drawer = null;
 
-    public constructor() {
+    public init(): void {
         this._svgCtx = Snap(600, 600);
 
         this._svgBoundary = document.getElementById("svg-boundary");
@@ -29,9 +29,7 @@ export default class Editor {
         this._mol2DataArea = document.getElementById("mol2-data") as HTMLTextAreaElement;
 
         this._drawer = new Drawer(this._svgCtx, this._svgCtxSize);
-    }
 
-    public init(): void {
         setInterval(() => this.mainLoop(), Configs.FrameRenderTime);
     }
 

@@ -3,8 +3,11 @@
         "outDir": "./dist/",
         "noImplicitAny": true,
         "sourceMap": true,
-        "module": "es6",
+        "module": "commonjs",
         "target": "es5",
+        "jsx": "react",
         "allowJs": true
-    }
+    },
+    "include": ["./src/**/*.tsx", "./typings/custom"],
+  	"exclude": ["dist", "build", "node_modules"]
 }

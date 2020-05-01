@@ -4,11 +4,17 @@
   "description": "Molecule drawer",
   "main": "index.js",
   "dependencies": {
+    "@material-ui/core": "^4.9.12",
+    "@material-ui/icons": "^4.9.1",
     "@types/snapsvg": "^0.5.0",
     "imports-loader": "^0.8.0",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
     "snapsvg": "^0.5.1"
   },
   "devDependencies": {
+    "@types/react": "^16.9.34",
+    "@types/react-dom": "^16.9.7",
     "browser-sync": "^2.26.7",
     "browser-sync-webpack-plugin": "^2.2.2",
     "html-webpack-plugin": "^2.30.1",

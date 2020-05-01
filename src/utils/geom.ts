@@ -1,5 +1,5 @@
 import Vector from "./vector";
-import Configs from "./config";
+import Configs from "../configs/config";
 
 export default class Geom {
 

@@ -1,6 +1,6 @@
-import Configs from "./config";
-import Geom from "./geom";
-import Vector from "./vector";
+import Configs from "./configs/config";
+import Geom from "./utils/geom";
+import Vector from "./utils/vector";
 
 export default class Drawer {
     private readonly MolMinRad: number = 10;
