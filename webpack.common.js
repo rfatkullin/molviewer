@@ -1,5 +1,4 @@
-var HtmlWebpackPlugin = require('html-webpack-plugin')
-var BrowserSyncPlugin = require('browser-sync-webpack-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 
 module.exports = {
@@ -29,19 +28,10 @@ module.exports = {
       }
     ],
   },
-  devtool: 'inline-source-map',
-  watch: true,
   plugins: [
     new HtmlWebpackPlugin({
       template: './src/index_template.html'
     }),
-    new BrowserSyncPlugin({
-      host: process.env.IP || 'localhost',
-      port: process.env.PORT || 3000,
-      server: {
-        baseDir: ['./dist']
-      }
-    })
   ],
   resolve: {
     extensions: ['.ts', '.js', '.tsx',],
