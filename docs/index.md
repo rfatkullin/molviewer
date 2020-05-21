@@ -1,1 +1,1 @@
-<html><head></head><body><div id="react-app"></div><script src="bundle.js"></script></body></html>
+<html><head></head><body><div id="react-app"></div><div>* You can rotate it</div><div>* You can edit mol2 data on the right</div><script src="bundle.js"></script></body></html>
